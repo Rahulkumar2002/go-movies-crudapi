@@ -34,13 +34,12 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for index, item := range movies {
-
 		if item.Id == params["id"] {
 			movies = append(movies[:index], movies[index+1:]...)
 			break
 		}
-		json.NewEncoder(w).Encode(movies)
 	}
+	json.NewEncoder(w).Encode(movies)
 }
 
 func getMovie(w http.ResponseWriter, r *http.Request) {
@@ -64,17 +63,12 @@ func createMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateMovie(w http.ResponseWriter, r *http.Request) {
-	// set json content type
 	w.Header().Set("Content_Type", "application/json")
-	// params
 	params := mux.Vars(r)
-	// to loop over movies we will use range loop
-	// we will delete movies and then add a new movie with update data of same id
-	//add a new movie that we have sent in the body of postman
 
 	for index, item := range movies {
 		if item.Id == params["id"] {
-			movies = append(movies[index:], movies[index+1:]...)
+			movies = append(movies[:index], movies[index+1:]...)
 			var movie Movie
 			_ = json.NewDecoder(r.Body).Decode(&movie)
 			movie.Id = params["id"]
@@ -90,6 +84,7 @@ func main() {
 
 	movies = append(movies, Movie{Id: "1", Isbn: "5000", Title: "Movie One", Director: &Director{Firstname: "John", Lastname: "Doe"}})
 	movies = append(movies, Movie{Id: "2", Isbn: "5010", Title: "Movie Two", Director: &Director{Firstname: "Rahul", Lastname: "Kumar Jha"}})
+	movies = append(movies, Movie{Id: "3", Isbn: "5020", Title: "Movie Three", Director: &Director{Firstname: "Rahul", Lastname: "Kumar"}})
 
 	r := mux.NewRouter()
 	r.HandleFunc("/movies", getMovies).Methods("GET")
